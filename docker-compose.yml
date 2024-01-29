@@ -1,0 +1,43 @@
+version: '3'
+services:
+  hyperf:
+    container_name: hyperf-app
+    image: hyperf
+    command: php bin/hyperf.php server:watch
+    build:
+      context: .
+    volumes:
+      - ./:/var/www
+    ports:
+      - "9501:9501"
+    environment:
+      - APP_ENV=dev
+      - SCAN_CACHEABLE=false
+    networks:
+      - hyperf_net
+  database:
+    container_name: hyperf-database
+    image: mysql:8
+    expose:
+      - "3306"
+    environment:
+      - MYSQL_USER=hyperf
+      - MYSQL_PASSWORD=password
+      - MYSQL_DATABASE=hyperf
+      - MYSQL_ROOT_PASSWORD=root
+    ports:
+      - "3306:3306"
+    volumes:
+      - ./database/mysql:/var/lib/mysql
+    networks:
+      - hyperf_net
+  redis:
+    container_name: hyperf-redis
+    image: redis:latest
+    ports:
+      - "6379:6379"
+    networks: 
+      - hyperf_net
+networks:
+  hyperf_net:
+    driver: bridge
